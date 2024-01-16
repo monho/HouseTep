@@ -28,24 +28,26 @@ const HeaderComponents = styled(Header)`
 
 const ContentArea = styled.div`
   display: flex;
-  margin-top: 80px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  transition: height 3s; /* 3초 동안의 트랜지션 효과를 줌 로딩 시간 3초동안 로딩 텍스트를 화면 중간으로 출력하기 위해*/
-  height: ${({ isLoading }) =>
-    isLoading ? "100%" : "auto"}; /* isLoading 상태에 따라 높이를 조절 */
+  transition: height 3s;
+  height: ${({ isLoading }) => (isLoading ? "100%" : "auto")};
+  margin-top: 80px;
 
   p {
     margin: 0;
     text-align: center;
   }
 `;
+
 const PurchaseContainer = styled.div`
+  position: sticky;
   bottom: 0;
   width: 100%;
   z-index: 1000;
 `;
+
 function Order() {
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.loading);
@@ -59,12 +61,12 @@ function Order() {
         const data = await response.json();
         dispatch(setItems(data));
         setTimeout(() => {
-          setIsLoading(false); // 3초 후에 isLoading을 false로 변경
+          setIsLoading(false);
           dispatch(setLoading(false));
         }, 3000);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setIsLoading(false); // 에러 발생 시에도 isLoading을 false로 변경
+        setIsLoading(false);
         dispatch(setLoading(false));
       }
     };
