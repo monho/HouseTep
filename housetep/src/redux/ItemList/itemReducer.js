@@ -1,9 +1,10 @@
+// itemReducer.js
 const initialState = {
     loading: true,
     items: [],
 };
 
-const rootReducer = (state = initialState, action) => {
+const itemReducer = (state = initialState, action) => {
     switch (action.type) {
         case 'SET_LOADING':
             return {
@@ -15,16 +16,9 @@ const rootReducer = (state = initialState, action) => {
                 ...state,
                 items: action.payload,
             };
-        case 'SET_COUNT':
-            return {
-                ...state,
-                items: state.items.map((item) =>
-                    item.id === action.payload.itemId ? { ...item, count: action.payload.count } : item,
-                ),
-            };
         default:
             return state;
     }
 };
 
-export default rootReducer;
+export default itemReducer;
