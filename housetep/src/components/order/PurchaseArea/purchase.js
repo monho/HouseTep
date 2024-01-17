@@ -1,5 +1,7 @@
+// Purchase.js
 import React from 'react';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux'; // Import useSelector
 
 const Warp = styled.div`
     width: 100%;
@@ -34,14 +36,19 @@ const CommitBtn = styled.button`
 `;
 
 function Purchase() {
+    // Use useSelector to get the totalQuantity and totalPrice from the Redux state
+    const totalQuantity = useSelector((state) => state.totalQuantity);
+    const totalPrice = useSelector((state) => state.totalPrice);
+    console.log(totalPrice);
     return (
         <Warp>
             <Inner>
-                <Toparea>총 수량 : 0개</Toparea>
-                <Bottomrea>총 가격 : 0원</Bottomrea>
+                <Toparea>총 수량: {totalQuantity}개</Toparea>
+                <Bottomrea>총 가격: {totalPrice}원</Bottomrea>
                 <CommitBtn>주문하기</CommitBtn>
             </Inner>
         </Warp>
     );
 }
+
 export default Purchase;

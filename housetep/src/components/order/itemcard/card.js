@@ -1,12 +1,12 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
 import { setCount } from '../../../redux/actions';
 
 const Warp = styled.div`
     width: 301px;
     height: 80px;
-    background: ${({ count }) => (count > 0 ? 'rgba(247,90,47,0.1)' : '#fff')}; // 카운터가 0 이상이면 색을 변경
+    background: ${({ count }) => (count > 0 ? 'rgba(247,90,47,0.1)' : '#fff')};
     border: 1px solid rgba(0, 0, 0, 0.3);
     border-radius: 15px;
     margin-bottom: 18px;
@@ -22,6 +22,7 @@ const LeftInner = styled.div`
     margin: 0px;
     background-color: #d9d9d9;
 `;
+
 const RightInner = styled.div`
     width: 100%;
     height: 62px;
@@ -31,12 +32,14 @@ const RightInner = styled.div`
     justify-content: center;
     gap: 10px;
 `;
+
 const RtopArea = styled.div`
     width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
 `;
+
 const RbottomArea = styled.div`
     width: 100%;
     height: 25px;
@@ -53,8 +56,9 @@ const ItemCount = styled.div`
     margin: 0px;
     display: flex;
 `;
+
 const CountButton = styled.a`
-    background-color: transparent; /* 수정된 부분 */
+    background-color: transparent;
     color: #000;
     border: none;
     font-size: 25px;
@@ -66,6 +70,7 @@ const CountButton = styled.a`
 const ItemPrice = styled.div`
     margin: 0px;
 `;
+
 const EventTag = styled.div`
     background-color: #f75a2f;
     border-radius: 10px;
@@ -78,8 +83,29 @@ const EventTag = styled.div`
     align-items: center;
     justify-content: center;
 `;
-function Card({ item }) {
+
+const calculateTotalQuantity = (items) => {
+    return items.reduce((total, currentItem) => {
+        // 각 아이템의 수량이 0 이상인 경우에만 합산
+        return total + (currentItem.count || 0);
+    }, 0);
+};
+
+const calculateTotalPrice = (items) => {
+    return items.reduce((total, currentItem) => {
+        // 각 아이템의 수량이 0 이상인 경우에만 가격 합산
+        return total + (currentItem.count || 0) * currentItem.price;
+    }, 0);
+};
+
+function Card({ item, updateTotalValues }) {
     const dispatch = useDispatch();
+    const formatPrice = (price) => {
+        return price.toLocaleString();
+    };
+    const state = useSelector((state) => state); // Redux state 가져오기
+    const [totalQuantity, setTotalQuantity] = useState(0);
+    const [totalPrice, setTotalPrice] = useState(0);
 
     const count =
         useSelector((state) => {
@@ -90,12 +116,33 @@ function Card({ item }) {
     const handleIncrement = () => {
         if (count < 999) {
             dispatch(setCount(item.id, count + 1));
+            logItemDetails();
         }
     };
 
     const handleDecrement = () => {
         if (count > 0) {
             dispatch(setCount(item.id, count - 1));
+            logItemDetails();
+        }
+    };
+
+    useEffect(() => {
+        const newTotalQuantity = calculateTotalQuantity(state.items);
+        const newTotalPrice = calculateTotalPrice(state.items);
+
+        // console.log(`총 수량: ${newTotalQuantity}`);
+        // console.log(`총 가격: ${formatPrice(newTotalPrice)}`);
+
+        setTotalQuantity(newTotalQuantity);
+        setTotalPrice(newTotalPrice);
+    }, [state.items]);
+
+    const logItemDetails = () => {
+        if (count > 0) {
+            const itemCount = count + 1;
+            const totalPrice = item.price * itemCount;
+            console.log(`아이템: ${item.name}, 수량: ${itemCount}, 가격: ${formatPrice(totalPrice)}원`);
         }
     };
 
@@ -113,10 +160,11 @@ function Card({ item }) {
                         {count}
                         <CountButton onClick={handleIncrement}>+</CountButton>
                     </ItemCount>
-                    <ItemPrice>{item.price}원</ItemPrice>
+                    <ItemPrice>{formatPrice(item.price)}원</ItemPrice>
                 </RbottomArea>
             </RightInner>
         </Warp>
     );
 }
+
 export default Card;
