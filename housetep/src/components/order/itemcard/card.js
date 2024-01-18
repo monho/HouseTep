@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCount } from '../../../redux/actions';
+import { setCount, updateTotalValues } from '../../../redux/actions';
 
 const Warp = styled.div`
     width: 301px;
@@ -131,13 +131,14 @@ function Card({ item, updateTotalValues }) {
         const newTotalQuantity = calculateTotalQuantity(state.items);
         const newTotalPrice = calculateTotalPrice(state.items);
 
-        // console.log(`총 수량: ${newTotalQuantity}`);
-        // console.log(`총 가격: ${formatPrice(newTotalPrice)}`);
-
         setTotalQuantity(newTotalQuantity);
         setTotalPrice(newTotalPrice);
-    }, [state.items]);
 
+        // updateTotalValues 함수가 존재한다면 호출
+        if (updateTotalValues) {
+            updateTotalValues(newTotalQuantity, newTotalPrice);
+        }
+    }, [state.items, updateTotalValues]);
     const logItemDetails = () => {
         if (count > 0) {
             const itemCount = count + 1;
